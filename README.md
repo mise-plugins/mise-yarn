@@ -1,6 +1,6 @@
-# asdf-yarn
+# mise-yarn
 
-Yarn plugin for the [asdf][1] version manager.
+Yarn plugin for the [mise][1] version manager.
 
 > 💡 **Note:** This plugin validates package authenticity via [`gpg`][2] only for yarn v1.
 > v2 and later versions are downloaded as single js file which doesn't have any signatures
@@ -13,9 +13,8 @@ If one of the commands needed is unavailable, it will let you know.
 ## Installing
 
 ```
-asdf plugin-add yarn
-asdf install yarn latest
+mise plugin i yarn
 ```
 
-[1]: https://asdf-vm.com/
+[1]: https://mise.jdx.dev/
 [2]: https://www.openpgp.org/
