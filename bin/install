@@ -23,22 +23,26 @@ asdf_yarn_v1_download_wget() {
   # Download archive
   wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
-  # Download archive signature
-  wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
+  if [ -z ${MISE_YARN_SKIP_GPG+false} ]; then
+    # Download archive signature
+    wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
 
-  # Download and import signing key
-  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --import
+    # Download and import signing key
+    wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --import
+  fi
 }
 
 asdf_yarn_v1_download_curl() {
   # Download archive
   curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
-  # Download archive signature
-  curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
+  if [ -z ${MISE_YARN_SKIP_GPG+false} ]; then
+    # Download archive signature
+    curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
 
-  # Download and import signing key
-  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --import
+    #Download and import signing key
+    curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --import
+  fi
 }
 
 asdf_yarn_v1_download() {
@@ -52,7 +56,11 @@ asdf_yarn_v1_download() {
 }
 
 asdf_yarn_v1_install() {
-  { [ -x "$(which tar)" ] && [ -x "$(which gpg)" ]; } || asdf_yarn_fail "Missing one or more of the following dependencies: tar, gpg"
+  [ -x "$(which tar)" ] || asdf_yarn_fail "Missing following dependency: tar"
+
+  if [ -z ${MISE_YARN_SKIP_GPG+false} ]; then
+    [ -x "$(which gpg)" ] || asdf_yarn_fail "Missing following dependency: gpg"
+  fi
 
   local ASDF_YARN_DIR
   ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
@@ -62,8 +70,10 @@ asdf_yarn_v1_install() {
 
     asdf_yarn_v1_download
 
-    # Verify archive signature
-    GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+    if [ -z ${MISE_YARN_SKIP_GPG+false} ]; then
+      # Verify archive signature
+      GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+    fi
 
     # Extract archive
     tar xzf "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" --strip-components=1 --no-same-owner
