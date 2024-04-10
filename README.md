@@ -1,7 +1,5 @@
 # asdf-yarn
 
-[![Build Status][3]][4]
-
 Yarn plugin for the [asdf][1] version manager.
 
 > 💡 **Note:** This plugin validates package authenticity via [`gpg`][2] only for yarn v1.
@@ -21,5 +19,3 @@ asdf install yarn latest
 
 [1]: https://asdf-vm.com/
 [2]: https://www.openpgp.org/
-[3]: https://travis-ci.org/twuni/asdf-yarn.svg?branch=main
-[4]: https://travis-ci.org/twuni/asdf-yarn
