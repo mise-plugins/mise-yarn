@@ -56,3 +56,11 @@ it should output
 ```bash
 mise plugin:yarn ✓ https://github.com/mise-plugins/asdf-yarn.git#somehash
 ```
+
+# Development
+
+This repo has github workflows which check linting and formatting of code in `bin` folder.
+
+To lint code run `make lint` (note: requires `shellcheck` to be installed)
+
+To check formatting run `make format-check` (requires `shfmt` to be installed) and to format code run `make fmt`
