@@ -55,7 +55,7 @@ asdf_yarn_v1_install() {
   { [ -x "$(which tar)" ] && [ -x "$(which gpg)" ]; } || asdf_yarn_fail "Missing one or more of the following dependencies: tar, gpg"
 
   local ASDF_YARN_DIR
-  ASDF_DATA_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
+  ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
 
   (
     cd "${ASDF_YARN_DIR}"
