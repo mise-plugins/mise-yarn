@@ -20,10 +20,20 @@ mise plugin i yarn
 mise plugin up yarn
 ```
 
-# Development
+## Development
 
 This repo has github workflows which check linting and formatting of code in `bin` folder.
 
 To lint code run `make lint` (note: requires `shellcheck` to be installed)
 
 To check formatting run `make format-check` (requires `shfmt` to be installed) and to format code run `make fmt`
+
+## yarn v1 missing signatures
+
+[Latest v1 releases](https://github.com/yarnpkg/yarn/releases/) (`1.22.22`, `1.22.21`, `1.22.20`) don't have signature files (`.asc`) which makes it impossible to install these versions (gpg signature verification doesn't pass). They say "we're working on fixing this" but issue persists since Nov 14, 2023 (release of 1.22.20)
+
+To be able to install those you can use `MISE_YARN_SKIP_GPG` env var
+
+```shell
+MISE_YARN_SKIP_GPG=true mise install yarn@1.22.22
+```
