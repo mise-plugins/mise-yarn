@@ -1,8 +1,8 @@
 # mise-yarn
 
-Yarn plugin for the [mise][https://mise.jdx.dev/] version manager.
+Yarn plugin for the [mise](https://mise.jdx.dev/) version manager.
 
-> 💡 **Note:** This plugin validates package authenticity via [`gpg`][https://www.openpgp.org/] only for yarn v1.
+> 💡 **Note:** This plugin validates package authenticity via [`gpg`](https://www.openpgp.org/) only for yarn v1.
 > v2 and later versions are downloaded as single js file which doesn't have any signatures
 
 ## Requirements
