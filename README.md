@@ -30,10 +30,10 @@ To check formatting run `make format-check` (requires `shfmt` to be installed) a
 
 ## yarn v1 missing signatures
 
-[Latest v1 releases](https://github.com/yarnpkg/yarn/releases/) (`1.22.22`, `1.22.21`, `1.22.20`) don't have signature files (`.asc`) which makes it impossible to install these versions (gpg signature verification doesn't pass). They say "we're working on fixing this" but issue persists since Nov 14, 2023 (release of 1.22.20)
+[Some past v1 releases](https://github.com/yarnpkg/yarn/releases/) (`1.22.21`, `1.22.20`) don't have signature files (`.asc`) which makes it impossible to install these versions (gpg signature verification doesn't pass). They say "we're working on fixing this" but issue persists since Nov 14, 2023 (release of 1.22.20)
 
 To be able to install those you can use `MISE_YARN_SKIP_GPG` env var
 
 ```shell
-MISE_YARN_SKIP_GPG=true mise install yarn@1.22.22
+MISE_YARN_SKIP_GPG=true mise install yarn@1.22.21
 ```
