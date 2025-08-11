@@ -14,8 +14,12 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
+          - windows-latest
 
     runs-on: ${{ matrix.os }}
+
+    env:
+      MISE_USE_VERSIONS_HOST: 0
 
     steps:
       - name: Checkout
@@ -25,41 +29,59 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           cache: false
-      - run: mkdir -p ~/.local/share/mise/plugins
-      - run: ln -s $PWD ~/.local/share/mise/plugins/yarn
-      - run: mise i yarn@latest
-      - run: mise x yarn@latest -- yarn --version
-
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install ShellCheck
-        run: brew install shellcheck
-
-      - name: Run ShellCheck
-        run: make lint
-
-  format:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install shfmt
-        run: brew update && brew install shfmt
-
-      - name: Run shfmt
-        run: make format-check
+      
+      # Unix-specific plugin setup
+      - name: Setup plugin (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p ~/.local/share/mise/plugins
+          ln -s $PWD ~/.local/share/mise/plugins/yarn
+      
+      # Windows-specific plugin setup
+      - name: Setup plugin (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $pluginDir = "$env:LOCALAPPDATA\mise\plugins"
+          New-Item -ItemType Directory -Force -Path $pluginDir
+          New-Item -ItemType Junction -Path "$pluginDir\yarn" -Target $PWD
+      
+      # Test Yarn v1 (Classic)
+      - name: Test Yarn v1 installation
+        shell: bash
+        run: |
+          mise i yarn@1
+          mise x yarn@1 -- yarn --version | grep -E '^1\.'
+      
+      # Test latest v1
+      - name: Test latest Yarn v1
+        shell: bash
+        run: |
+          mise i yarn@1.22.22
+          mise x yarn@1.22.22 -- yarn --version | grep -E '^1\.22\.22$'
+      
+      # Test Yarn v2+ (Berry)
+      - name: Test Yarn v2 installation
+        shell: bash
+        run: |
+          mise i yarn@2
+          mise x yarn@2 -- yarn --version | grep -E '^2\.'
+      
+      # Test latest Yarn
+      - name: Test latest Yarn
+        shell: bash
+        run: |
+          mise i yarn@latest
+          mise x yarn@latest -- yarn --version
+      
+      # Test version listing
+      - name: Test version listing
+        shell: bash
+        run: |
+          # Check that v1 versions appear first
+          mise ls-remote yarn | head -1 | grep -E '^1\.'
+          # Check that both v1 and v2+ versions are present
+          mise ls-remote yarn | grep -E '^1\.22\.22$'
+          mise ls-remote yarn | grep -E '^2\.'
+          mise ls-remote yarn | grep -E '^3\.'
+          mise ls-remote yarn | grep -E '^4\.'

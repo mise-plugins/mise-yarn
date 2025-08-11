@@ -1,32 +1,82 @@
 # mise-yarn
 
-Yarn plugin for the [mise](https://mise.jdx.dev/) version manager.
+Yarn plugin for [mise](https://mise.jdx.dev/) (using the vfox plugin format).
 
 > 💡 **Note:** This plugin validates package authenticity via [`gpg`](https://www.openpgp.org/) only for yarn v1.
 > v2 and later versions are downloaded as single js file which doesn't have any signatures
 
+## Features
+
+- Supports Yarn Classic (v1.x) and Yarn Berry (v2.x+)
+- Cross-platform: Works on Linux, macOS, and Windows
+- GPG signature verification for v1 releases (optional)
+- Lists v1 versions first for easier selection
+
 ## Requirements
 
-This plugin should work out of the box on Linux and Mac operating systems.
-If one of the commands needed is unavailable, it will let you know.
+- `wget` or `curl` - for downloading files
+- `gpg` - for v1 signature verification (optional, can be skipped with `MISE_YARN_SKIP_GPG=1`)
 
-## Installing / Updating
+## Installation
 
-```
-mise plugin i yarn
+```bash
+mise plugin install yarn
 ```
 
+Or specify the repository:
+```bash
+mise plugin install yarn https://github.com/mise-plugins/mise-yarn.git
 ```
-mise plugin up yarn
+
+## Usage
+
+### Install specific versions:
+```bash
+# Install latest v1
+mise install yarn@1
+
+# Install specific v1 version
+mise install yarn@1.22.22
+
+# Install latest v2
+mise install yarn@2
+
+# Install latest version
+mise install yarn@latest
+
+# Set a version globally
+mise use -g yarn@1.22.22
+
+# Set a version for current project
+mise use yarn@2
+```
+
+### List available versions:
+```bash
+mise ls-remote yarn
+# v1 versions will be listed first, followed by v2+
 ```
 
 ## Development
 
-This repo has github workflows which check linting and formatting of code in `bin` folder.
+This plugin uses the vfox plugin format and is implemented in Lua with the following structure:
+- `metadata.lua` - Plugin metadata
+- `hooks/` - Plugin hooks for various operations
+  - `available.lua` - Lists available versions
+  - `pre_install.lua` - Handles installation
+  - `post_install.lua` - Post-installation tasks
+  - `env_keys.lua` - Environment variable configuration
+  - `parse_legacy_file.lua` - Support for `.yvmrc` files
+  - `legacy_filenames.lua` - Defines legacy config files
 
-To lint code run `make lint` (note: requires `shellcheck` to be installed)
+To test the plugin locally:
+```bash
+# Link the plugin for local development
+ln -s /path/to/this/repo ~/.local/share/mise/plugins/yarn
 
-To check formatting run `make format-check` (requires `shfmt` to be installed) and to format code run `make fmt`
+# Test installation
+mise install yarn@1.22.22
+```
 
 ## yarn v1 missing signatures
 
@@ -37,3 +87,7 @@ To be able to install those you can use `MISE_YARN_SKIP_GPG` env var
 ```shell
 MISE_YARN_SKIP_GPG=true mise install yarn@1.22.21
 ```
+
+## License
+
+Licensed under the [MIT License](LICENSE).
